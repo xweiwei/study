@@ -2,6 +2,7 @@
 
 from idc import *
 
+
 class BaseEmu(object):
 
     def __init__(self, pc=1):
@@ -26,6 +27,8 @@ class BaseEmu(object):
         self.opts = {
             'MOV': self.mov,
             'MOVS': self.mov,
+            'ADD': self.add,
+            'ADDS': self.add,
             'ADR': self.adr,
             'LSL': self.lsl,
             'LSLS': self.lsl,
@@ -44,6 +47,12 @@ class BaseEmu(object):
                 self.mov_from_value(opt_value[0], self.get_value(opt_value[1]))
             else:
                 self.mov_from_reg(opt_value[0], opt_value[1])
+
+    def add(self, opt_value):
+        if self.is_value(opt_value[2]):
+            self.regs[opt_value[0]] = self.regs[opt_value[1]] + self.get_value(opt_value[2])
+        else:
+            self.regs[opt_value[0]] = self.regs[opt_value[1]] + self.regs[opt_value[2]]
 
     def adr(self, opt_value):
         self.regs[opt_value[0]] = self.read_value(opt_value)
@@ -113,7 +122,7 @@ class IdaDeObf(BaseEmu):
         return int(opt_value[opt_value.find('_')+1:], 16)
 
     def read_address(self, address):
-        return 0
+        return Dword(address)
 
 if __name__ == '__main__':
     func_start_addr = ScreenEA()
